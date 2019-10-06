@@ -1,4 +1,4 @@
-port module Main exposing (Model, Msg(..), init, main, toJs, update, view)
+module Main exposing (main)
 
 import Browser
 import Browser.Navigation exposing (Key)
@@ -12,33 +12,24 @@ import Url exposing (Url)
 
 
 -- ---------------------------
--- PORTS
--- ---------------------------
-
-
-port toJs : String -> Cmd msg
-
-
-
--- ---------------------------
 -- MODEL
 -- ---------------------------
 
 
 type alias Model =
-    { key : Key
-    , message : String
+    { message : String
+    , key : String
     }
 
 
-blankModel : Key -> Model
-blankModel key =
-    { key = key, message = "init" }
+blankModel : Model
+blankModel =
+    { message = "init", key = "" }
 
 
-init : flags -> Url -> Key -> ( Model, Cmd Msg )
-init _ _ key =
-    ( blankModel key, Cmd.none )
+init : String -> ( Model, Cmd Msg )
+init key =
+    ( { blankModel | key = key }, Cmd.none )
 
 
 
@@ -70,17 +61,25 @@ update message model =
 
 view : Model -> List (Html Msg)
 view model =
-    [ div [ class "button" ] [ button [ onClick Click ] [ text "Click me" ] ]
-    , div [ class "message" ] [ text model.message ]
-    , gmap
+    [ div [ class "message" ] [ text model.message ]
+    , gmap 39.2 -0.45
     ]
 
 
-gmap =
-    Html.node "google-map"
+gmap lat lng =
+    Html.node "af-map"
         [ Attribute.attribute "api-key" "AIzaSyDPGdhFftpVU-QW4ihbXi6IuLw1DUriYJ0"
-        , Attribute.attribute "latitude" "52"
-        , Attribute.attribute "longitude" "5"
+        , Attribute.attribute "latitude" <| String.fromFloat lat
+        , Attribute.attribute "longitude" <| String.fromFloat lng
+        , Attribute.attribute "zoom" "10"
+        ]
+        [ mkMarker lat lng ]
+
+
+mkMarker lat lng =
+    Html.node "af-marker"
+        [ Attribute.attribute "latitude" <| String.fromFloat lat
+        , Attribute.attribute "longitude" <| String.fromFloat lng
         ]
         []
 
@@ -91,9 +90,8 @@ gmap =
 -- ---------------------------
 
 
-main : Program Int Model Msg
 main =
-    Browser.application
+    Browser.document
         { init = init
         , update = update
         , view =
@@ -102,6 +100,4 @@ main =
                 , body = view m
                 }
         , subscriptions = \_ -> Sub.none
-        , onUrlChange = \_ -> NoOp
-        , onUrlRequest = \_ -> NoOp
         }

@@ -1,12 +1,9 @@
-'use strict';
+"use strict";
 
 require("./styles.scss");
 
-//npm i @em-polymer/google-map
-import * as map from "./assets/@em-polymer/google-map/google-map";
-//import * as marker from "@em-polymer/google-map/google-map-marker";
+import * as map from "./assets/webcomp/afmapcomp";
+import * as marker from "./assets/webcomp/afmarker";
 
-
-const {Elm} = require('./Main');
-var app = Elm.Main.init({flags: 6});
-
+const { Elm } = require("./Main");
+var app = Elm.Main.init({ flags: "AIzaSyDPGdhFftpVU-QW4ihbXi6IuLw1DUriYJ0" });

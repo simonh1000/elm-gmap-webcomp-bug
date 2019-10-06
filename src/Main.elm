@@ -10,6 +10,14 @@ import Json.Decode as Decode
 import Url exposing (Url)
 
 
+valencia =
+    { lat = 39.4, lng = -0.45 }
+
+
+type alias LatLng =
+    { lat : Float, lng : Float }
+
+
 
 -- ---------------------------
 -- MODEL
@@ -19,12 +27,13 @@ import Url exposing (Url)
 type alias Model =
     { message : String
     , key : String
+    , location : List LatLng
     }
 
 
 blankModel : Model
 blankModel =
-    { message = "init", key = "" }
+    { message = "init", key = "", location = [ valencia ] }
 
 
 init : String -> ( Model, Cmd Msg )
@@ -47,7 +56,12 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update message model =
     case message of
         Click ->
-            ( { model | message = "clicked" }, Cmd.none )
+            ( { model
+                | message = "clicked"
+                , location = { lat = 39.5, lng = -0.45 } :: model.location
+              }
+            , Cmd.none
+            )
 
         NoOp ->
             ( model, Cmd.none )
@@ -61,19 +75,24 @@ update message model =
 
 view : Model -> List (Html Msg)
 view model =
-    [ div [ class "message" ] [ text model.message ]
-    , gmap 39.2 -0.45
+    [ button [ onClick Click ] [ text "click" ]
+    , div [ class "message" ] [ text model.message ]
+    , model.location
+        |> List.map (\{ lat, lng } -> mkMarker lat lng)
+        |> gmap
     ]
 
 
-gmap lat lng =
+gmap kids =
     Html.node "af-map"
         [ Attribute.attribute "api-key" "AIzaSyDPGdhFftpVU-QW4ihbXi6IuLw1DUriYJ0"
-        , Attribute.attribute "latitude" <| String.fromFloat lat
-        , Attribute.attribute "longitude" <| String.fromFloat lng
+        , Attribute.attribute "latitude" <| String.fromFloat valencia.lat
+        , Attribute.attribute "longitude" <| String.fromFloat valencia.lng
         , Attribute.attribute "zoom" "10"
         ]
-        [ mkMarker lat lng ]
+    <|
+        div [ id "map" ] []
+            :: kids
 
 
 mkMarker lat lng =

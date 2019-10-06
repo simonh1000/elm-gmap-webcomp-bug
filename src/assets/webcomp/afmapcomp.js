@@ -55,19 +55,19 @@
                 this.locationMarker = {};
                 this.markers = {}; // qname => google.map.Marker
 
-                var shadowRoot = this.attachShadow({ mode: "open" });
-                shadowRoot.innerHTML = `
-                <style>
-                    :host {
-                        display: flex;
-                        border: 1px dotted black;
-                    }
-                    #map {
-                        width: 100%;
-                        height: 100%;                        
-                    }
-                </style>
-                <div id='map'></div>`;
+                // var shadowRoot = this.attachShadow({ mode: "open" });
+                // shadowRoot.innerHTML = `
+                // <style>
+                //     :host {
+                //         display: flex;
+                //         border: 1px dotted black;
+                //     }
+                //     #map {
+                //         width: 100%;
+                //         height: 100%;
+                //     }
+                // </style>
+                // <div id='map'></div>`;
             }
 
             connectedCallback() {
@@ -81,7 +81,7 @@
                     };
 
                     this.map = new google.maps.Map(
-                        this.shadowRoot.querySelector("#map"),
+                        this.querySelector("#map"),
                         this.mapOptions
                     );
 
@@ -101,6 +101,17 @@
                             marker.setMap(this.map);
                         }
                     );
+
+                    var observer = new MutationObserver(function(mutations) {
+                        mutations.forEach(function(mutation) {
+                            console.log("mutation", mutation);
+                        });
+                    });
+                    observer.observe(this, {
+                        attributes: true,
+                        childList: true,
+                        subtree: true
+                    });
 
                     google.maps.event.addListenerOnce(this.map, "idle", () => {
                         this.attachMarkers();

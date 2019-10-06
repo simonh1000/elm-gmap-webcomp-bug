@@ -85,10 +85,10 @@
                         this.mapOptions
                     );
 
-                    console.log(this.childNodes);
-                    this.childNodes
-                        // .filter(node => node.localName == "af-marker")
-                        .forEach((node, idx) => {
+                    const kids = Array.from(this.childNodes);
+                    console.log(kids);
+                    kids.filter(node => node.localName == "af-marker").forEach(
+                        (node, idx) => {
                             const marker = new google.maps.Marker({
                                 position: {
                                     lat: node.latitude,
@@ -99,7 +99,8 @@
                                 zIndex: 100 - idx
                             });
                             marker.setMap(this.map);
-                        });
+                        }
+                    );
 
                     google.maps.event.addListenerOnce(this.map, "idle", () => {
                         this.attachMarkers();
